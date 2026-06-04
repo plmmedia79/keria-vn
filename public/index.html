@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lấy mã Email</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/plus-filebox.css?v=20260530-clear-pool-ui">
+</head>
+<body class="layout-public layout-pickup-standalone">
+
+  <main class="app-canvas pickup-canvas">
+<style>
+.hero-subtitle--mail-alert {
+  color: #b91c1c !important;
+  font-weight: 800;
+  line-height: 1.75;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+</style>
+<section class="pickup-shell glass-panel">
+  <div class="pickup-primary">
+    <section class="pickup-route-panel" data-pickup-route-panel="pickup" hidden>
+      <div class="pickup-card__intro pickup-card__intro--left">
+        <h1 class="hero-title">Lấy hàng loạt</h1>
+        <p class="hero-subtitle">Nhập mã đổi thưởng 12 ký tự, hệ thống sẽ tự động đóng gói thành ZIP để tải xuống. Hỗ trợ có hoặc không có dấu gạch ngang.</p>
+      </div>
+
+      <div class="field-stack">
+        <label class="field-label" for="codes">
+          <span class="material-symbols-outlined">qr_code_2</span>
+          <span>Danh sách mã đổi thưởng</span>
+        </label>
+        <textarea id="codes" placeholder="Ví dụ:
+ABCD-EFGH-2345
+JKLM-NPQR-6789
+WXYZ12345678"></textarea>
+        <div class="txt-import-row">
+          <label class="button secondary txt-import-button" for="pickupTxtImport">
+            <span class="material-symbols-outlined">upload_file</span>
+            Nhập TXT
+          </label>
+          <input id="pickupTxtImport" type="file" accept=".txt,text/plain" data-code-txt-import="codes" data-code-import-status="pickupTxtImportStatus">
+          <span id="pickupTxtImportStatus" class="txt-import-status" aria-live="polite"></span>
+        </div>
+        <p class="muted">Mỗi dòng một mã đổi thưởng, tối đa 3000 mã mỗi lần.</p>
+      </div>
+
+      <div class="field-stack">
+        <label class="field-label">
+          <span class="material-symbols-outlined">data_object</span>
+          <span>Định dạng tải xuống</span>
+        </label>
+        <div class="format-grid">
+          <label class="format-option">
+            <input type="radio" name="output_format" value="plus_json" checked>
+            <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">code_blocks</span>
+            <strong>Định dạng CPA</strong>
+          </label>
+          <label class="format-option">
+            <input type="radio" name="output_format" value="sub2api">
+            <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">api</span>
+            <strong>Định dạng Sub</strong>
+          </label>
+        </div>
+      </div>
+
+      <button id="pickup" class="full" type="button">
+        <span class="material-symbols-outlined pickup-button-icon" style="font-variation-settings:'FILL' 1">cloud_sync</span>
+        <span class="pickup-loading-spinner" aria-hidden="true"></span>
+        <span class="pickup-button-text">Lấy hàng loạt</span>
+      </button>
+      <div id="status" class="status"></div>
+    </section>
+
+    <section class="pickup-route-panel is-active" data-pickup-route-panel="mail">
+      <div class="pickup-card__intro pickup-card__intro--left">
+        <h1 class="hero-title">Lấy mã Email</h1>
+        <p class="hero-subtitle hero-subtitle--mail-alert">Trước tiên nhập thẻ key và nhấn "Đổi lấy khóa email", sau đó dùng email đăng nhập GPT. Đợi GPT gửi mã xác minh rồi nhấn "Lấy mã Email". Nếu mã xác minh sai, trước tiên cho GPT gửi lại mã, sau đó nhấn "Lấy mã Email" lần nữa.</p>
+      </div>
+
+  <section class="pickup-mail-panel pickup-mail-panel--standalone" aria-label="Lấy mã Email">
+    <div class="pickup-mail-panel__head">
+      <span class="material-symbols-outlined">mail</span>
+      <strong>Nhận email</strong>
+    </div>
+    <div class="pickup-mail-grid">
+      <div class="pickup-mail-panel__controls">
+        <label class="field-label" for="mailInlineMailKeyCodes">
+          <span class="material-symbols-outlined">key</span>
+          <span>Đổi thẻ key lấy khóa email</span>
+        </label>
+        <textarea id="mailInlineMailKeyCodes" data-mail-key-codes rows="4" placeholder="Mỗi dòng một thẻ key, ví dụ:&#10;ABCD-EFGH-2345"></textarea>
+        <button data-mail-key-lookup class="secondary pickup-mail-wide-button" type="button">
+          <span class="material-symbols-outlined">vpn_key</span>
+          Đổi lấy khóa email
+        </button>
+        <div data-mail-key-status class="pickup-mail-panel__status" aria-live="polite"></div>
+        <div data-mail-key-results class="pickup-mail-key-results" aria-live="polite"></div>
+      </div>
+
+      <div class="pickup-mail-panel__controls">
+        <label class="field-label" for="mailInlineEmailCodeSource">
+          <span class="material-symbols-outlined">alternate_email</span>
+          <span>Email</span>
+        </label>
+        <input id="mailInlineEmailCodeSource" data-email-code-source type="email" autocomplete="off" placeholder="name@example.com">
+        <label class="field-label" for="mailInlineEmailCodeSecret">
+          <span class="material-symbols-outlined">password</span>
+          <span>Khóa email</span>
+        </label>
+        <input id="mailInlineEmailCodeSecret" data-email-code-secret type="text" autocomplete="off" placeholder="Khóa email đổi từ thẻ key">
+        <button data-email-code-lookup class="secondary pickup-mail-wide-button" type="button">
+          <span class="material-symbols-outlined">mark_email_read</span>
+          Lấy mã Email
+        </button>
+        <div data-email-code-status class="pickup-mail-panel__status" aria-live="polite"></div>
+      </div>
+    </div>
+  </section>
+    </section>
+
+    <section class="pickup-route-panel" data-pickup-route-panel="at-refresh" hidden></section>
+
+    <section class="pickup-route-panel" data-pickup-route-panel="after-sale" hidden>
+      <div class="pickup-card__intro pickup-card__intro--left">
+        <h1 class="hero-title">Tra cứu hậu mãi</h1>
+        <p class="hero-subtitle">Nhập thẻ key gốc hoặc tên file đầy đủ, hệ thống sẽ kiểm tra trạng thái 401 và cấp thẻ key đổi mới khả dụng.</p>
+      </div>
+      <form method="post" action="/after-sale" data-submit-text="Đang kiểm tra..." data-scan-progress data-progress-title="Đang kiểm tra chứng từ hậu mãi" data-progress-detail="Đang xác minh trạng thái thẻ key và khớp chứng từ thay thế, vui lòng giữ trang mở.">
+        <div class="field-stack">
+          <label class="field-label" for="afterSaleQueriesInline">
+            <span class="material-symbols-outlined">support_agent</span>
+            <span>Thẻ key gốc / Tên file đầy đủ</span>
+          </label>
+          <textarea id="afterSaleQueriesInline" name="queries" rows="8" placeholder="Mỗi dòng một mục, ví dụ:&#10;ABCD-EFGH-2345&#10;0001_ABCD-EFGH-2345_account.json&#10;account.json" required></textarea>
+          <div class="txt-import-row">
+            <label class="button secondary txt-import-button" for="afterSaleTxtImportInline">
+              <span class="material-symbols-outlined">upload_file</span>
+              Nhập TXT
+            </label>
+            <input id="afterSaleTxtImportInline" type="file" accept=".txt,text/plain" data-code-txt-import="afterSaleQueriesInline" data-code-import-status="afterSaleTxtImportStatusInline">
+            <span id="afterSaleTxtImportStatusInline" class="txt-import-status" aria-live="polite"></span>
+          </div>
+          <p class="muted">Tên file đầy đủ phải khớp chính xác; nếu tên file chứa thẻ key, hệ thống sẽ ưu tiên nhận diện thẻ key.</p>
+        </div>
+        <button class="full" type="submit">
+          <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">verified</span>
+          Tra cứu hàng loạt trạng thái 401
+        </button>
+      </form>
+    </section>
+  </div>
+
+  <aside class="pickup-shortcuts" aria-label="Chuyển nhanh">
+    <div class="pickup-shortcuts__head">
+      <span class="material-symbols-outlined">switch_access_shortcut</span>
+      <strong>Chuyển nhanh</strong>
+    </div>
+    <button class="pickup-shortcut-link is-active" type="button" data-pickup-route="mail">
+      <span class="material-symbols-outlined">mark_email_read</span>
+      <span><strong>Lấy mã Email</strong><small>Đăng nhập web</small></span>
+    </button>
+  </aside>
+</section>
+<script>
+const button = document.getElementById("pickup");
+const codesBox = document.getElementById("codes");
+const statusBox = document.getElementById("status");
+const atRefreshButton = document.getElementById("atRefresh");
+const atRefreshQueriesBox = document.getElementById("atRefreshQueries");
+const atRefreshStatusBox = document.getElementById("atRefreshStatus");
+const atRefreshButtonText = atRefreshButton?.querySelector(".at-refresh-button-text");
+const atRefreshButtonDefaultText = atRefreshButtonText?.textContent || "Làm mới AT";
+const pickupButtonText = button?.querySelector(".pickup-button-text");
+const pickupButtonDefaultText = pickupButtonText?.textContent || "Lấy hàng loạt";
+function activatePickupRoute(route) {
+  const selected = route || "mail";
+  document.querySelectorAll("[data-pickup-route-panel]").forEach((panel) => {
+    panel.classList.toggle("is-active", panel.dataset.pickupRoutePanel === selected);
+  });
+  document.querySelectorAll("[data-pickup-route]").forEach((control) => {
+    const active = control.dataset.pickupRoute === selected;
+    control.classList.toggle("is-active", active);
+    control.setAttribute("aria-pressed", active ? "true" : "false");
+  });
+}
+document.querySelectorAll("[data-pickup-route]").forEach((control) => {
+  control.addEventListener("click", () => activatePickupRoute(control.dataset.pickupRoute));
+});
+
+function mailStatus(el, message, type = "") {
+  if (!el) {
+    return;
+  }
+  el.textContent = message || "";
+  el.className = type ? `pickup-mail-panel__status ${type}` : "pickup-mail-panel__status";
+}
+function pickupMailField(selector) {
+  return document.querySelector(selector);
+}
+function fillMailLookup(email, secret) {
+  const emailInput = pickupMailField("[data-email-code-source]");
+  const secretInput = pickupMailField("[data-email-code-secret]");
+  if (emailInput) {
+    emailInput.value = email || "";
+  }
+  if (secretInput) {
+    secretInput.value = secret || "";
+  }
+  emailInput?.focus();
+}
+function renderMailKeyResults(payload) {
+  const results = pickupMailField("[data-mail-key-results]");
+  if (!results) {
+    return;
+  }
+  results.innerHTML = "";
+  (payload.items || []).forEach((item) => {
+    const row = document.createElement(item.ok ? "button" : "div");
+    row.className = item.ok ? "pickup-mail-key-item is-ok" : "pickup-mail-key-item is-error";
+    if (item.ok) {
+      row.type = "button";
+      row.addEventListener("click", () => fillMailLookup(item.email || "", item.secret || ""));
+    }
+    const title = document.createElement("strong");
+    title.textContent = item.ok ? (item.email || item.masked_email || "Email") : item.code;
+    const meta = document.createElement("span");
+    meta.className = "pickup-mail-key-meta";
+    meta.textContent = item.ok ? `Khóa: ${item.secret}` : (item.message || "Đổi không thành công");
+    row.append(title, meta);
+    results.appendChild(row);
+  });
+}
+async function exchangeMailKeys() {
+  const source = pickupMailField("[data-mail-key-codes]");
+  const button = pickupMailField("[data-mail-key-lookup]");
+  const status = pickupMailField("[data-mail-key-status]");
+  const codes = source?.value.trim() || "";
+  if (!codes) {
+    mailStatus(status, "Vui lòng nhập thẻ key trước", "error");
+    return;
+  }
+  button.disabled = true;
+  mailStatus(status, "Đang đổi lấy khóa email...");
+  try {
+    const form = new FormData();
+    form.append("codes", codes);
+    const response = await fetch("/api/pickup/mail-keys", {
+      method: "POST",
+      body: form,
+      headers: { Accept: "application/json" },
+      cache: "no-store"
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || payload.ok === false) {
+      throw new Error(payload.detail || payload.message || "Đổi không thành công");
+    }
+    renderMailKeyResults(payload);
+    const okItem = (payload.items || []).find((item) => item.ok);
+    if (okItem) {
+      fillMailLookup(okItem.email || "", okItem.secret || "");
+    }
+    const text = `Đã đổi ${payload.success_count || 0}, thất bại ${payload.fail_count || 0}`;
+    mailStatus(status, text, payload.success_count ? "ok" : "error");
+  } catch (error) {
+    mailStatus(status, error.message || "Đổi không thành công", "error");
+  } finally {
+    button.disabled = false;
+  }
+}
+function mailCodeStatusText(payload) {
+  const parts = [];
+  if (payload.code) {
+    parts.push(`Mã xác minh: ${payload.code}`);
+  } else {
+    parts.push(payload.message || "Chưa nhận diện được mã xác minh");
+  }
+  if (payload.mail_time_label) {
+    parts.push(`Thời gian email: ${payload.mail_time_label}`);
+  }
+  if (payload.freshness_label) {
+    parts.push(payload.freshness_label);
+  }
+  return parts.join(" · ");
+}
+async function lookupEmailCode() {
+  const source = pickupMailField("[data-email-code-source]");
+  const secret = pickupMailField("[data-email-code-secret]");
+  const lookupButton = pickupMailField("[data-email-code-lookup]");
+  const status = pickupMailField("[data-email-code-status]");
+  const value = source?.value.trim() || "";
+  const secretValue = secret?.value.trim() || "";
+  if (!value) {
+    mailStatus(status, "Vui lòng nhập email trước", "error");
+    return;
+  }
+  if (!secretValue) {
+    mailStatus(status, "Vui lòng nhập khóa email trước", "error");
+    return;
+  }
+  lookupButton.disabled = true;
+  mailStatus(status, "Đang lấy mã...");
+  try {
+    const form = new FormData();
+    form.append("email_or_url", value);
+    form.append("mail_secret", secretValue);
+    const response = await fetch("/api/pickup/mail-code", {
+      method: "POST",
+      body: form,
+      headers: { Accept: "application/json" },
+      cache: "no-store"
+    });
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok || payload.ok === false) {
+      throw new Error(payload.detail || payload.message || "Lấy mã thất bại");
+    }
+    const statusType = payload.code ? (payload.freshness_status === "stale" ? "stale" : "ok") : "";
+    mailStatus(status, mailCodeStatusText(payload), statusType);
+    if (payload.code) {
+      navigator.clipboard?.writeText?.(payload.code).catch(() => {});
+    }
+  } catch (error) {
+    mailStatus(status, error.message || "Lấy mã thất bại", "error");
+  } finally {
+    lookupButton.disabled = false;
+  }
+}
+pickupMailField("[data-mail-key-lookup]")?.addEventListener("click", exchangeMailKeys);
+pickupMailField("[data-mail-key-codes]")?.addEventListener("keydown", (event) => {
+  if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+    event.preventDefault();
+    exchangeMailKeys();
+  }
+});
+pickupMailField("[data-email-code-lookup]")?.addEventListener("click", lookupEmailCode);
+pickupMailField("[data-email-code-source]")?.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    lookupEmailCode();
+  }
+});
+pickupMailField("[data-email-code-secret]")?.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    lookupEmailCode();
+  }
+});
+
+atRefreshButton?.addEventListener("click", async () => {
+  const queries = (atRefreshQueriesBox?.value || "").trim();
+  if (!atRefreshStatusBox) return;
+  atRefreshStatusBox.className = "status";
+  if (!queries) {
+    atRefreshStatusBox.textContent = "Vui lòng nhập thẻ key hoặc email trước";
+    atRefreshStatusBox.classList.add("error");
+    return;
+  }
+  atRefreshButton.disabled = true;
+  atRefreshButton.classList.add("is-loading");
+  if (atRefreshButtonText) atRefreshButtonText.textContent = "Đang làm mới...";
+  atRefreshStatusBox.textContent = "Đang làm mới AT, vui lòng giữ trang mở...";
+  const totalItems = queries.replace(/,/g, "\n").split(/\n+/).map((item) => item.trim()).filter(Boolean).length;
+  const progressId = window.__createProgressId ? window.__createProgressId() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  let progressStarted = false;
+  if (window.__showScanProgressForTask) {
+    progressStarted = true;
+    window.__showScanProgressForTask(progressId, {
+      title: "Đang làm mới AT",
+      detail: `Đã xử lý 0/${totalItems}`,
+      total: totalItems,
+    });
+  }
+  try {
+    const form = new FormData();
+    form.append("queries", queries);
+    form.append("output_format", document.querySelector('input[name="at_refresh_output_format"]:checked')?.value || "plus_json");
+    form.append("progress_id", progressId);
+    const response = await fetch("/api/pickup/at-refresh", { method: "POST", body: form });
+    if (!response.ok) {
+      let message = await response.text();
+      try { message = JSON.parse(message).detail || message; } catch (_) {}
+      throw new Error(message || "Đăng nhập làm mới AT thất bại");
+    }
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = response.headers.get("X-Pickup-Filename") || "http-at-refresh.zip";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    atRefreshStatusBox.textContent = "Đã tạo gói tải chứng từ AT";
+    atRefreshStatusBox.classList.add("ok");
+  } catch (error) {
+    atRefreshStatusBox.textContent = error.message || "Đăng nhập làm mới AT thất bại";
+    atRefreshStatusBox.classList.add("error");
+    if (progressStarted && window.__hideScanProgress) {
+      window.setTimeout(() => window.__hideScanProgress(), 1200);
+    }
+  } finally {
+    atRefreshButton.classList.remove("is-loading");
+    atRefreshButton.disabled = false;
+    if (atRefreshButtonText) atRefreshButtonText.textContent = atRefreshButtonDefaultText;
+  }
+});
+button?.addEventListener("click", async () => {
+  const codes = codesBox?.value.trim() || "";
+  const outputFormat = document.querySelector('input[name="output_format"]:checked')?.value || "plus_json";
+  if (!statusBox) return;
+  statusBox.className = "status";
+  if (!codes) {
+    statusBox.textContent = "Vui lòng nhập mã đổi thưởng trước";
+    statusBox.classList.add("error");
+    return;
+  }
+  button.disabled = true;
+  button.classList.add("is-loading");
+  if (pickupButtonText) pickupButtonText.textContent = "Đang đóng gói...";
+  statusBox.textContent = "Đang đóng gói, vui lòng đợi...";
+  try {
+    const form = new FormData();
+    form.append("codes", codes);
+    form.append("output_format", outputFormat);
+    const response = await fetch("/pickup", { method: "POST", body: form });
+    if (!response.ok) {
+      let message = await response.text();
+      try { message = JSON.parse(message).detail || message; } catch (_) {}
+      throw new Error(message || "Lấy hàng thất bại");
+    }
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = response.headers.get("X-Pickup-Filename") || (outputFormat === "sub2api" ? "Sub.zip" : "CPA.zip");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    statusBox.textContent = "Đã tạo gói tải xuống";
+    statusBox.classList.add("ok");
+  } catch (error) {
+    statusBox.textContent = error.message || "Lấy hàng thất bại";
+    statusBox.classList.add("error");
+  } finally {
+    button.classList.remove("is-loading");
+    button.disabled = false;
+    if (pickupButtonText) pickupButtonText.textContent = pickupButtonDefaultText;
+  }
+});
+</script>
+</main>
+
+  <script src="/static/plus-filebox.js?v=20260530-clear-pool-ui"></script>
+</body>
+</html>

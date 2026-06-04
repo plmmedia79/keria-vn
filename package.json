@@ -1,0 +1,17 @@
+{
+  "name": "keria-vn",
+  "version": "1.0.0",
+  "description": "Giao diện Lấy mã Email tiếng Việt + proxy tới server keria",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "http-proxy-middleware": "^3.0.3"
+  }
+}
