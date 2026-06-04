@@ -3,3 +3,6 @@ npm-debug.log*
 .env
 .DS_Store
 *.log
+
+# Bản sao lồng nhau (không commit)
+Lưu trữ/
