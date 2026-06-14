@@ -12,6 +12,46 @@ const app = express();
 const PORT = process.env.PORT || 8000;
 const UPSTREAM = process.env.UPSTREAM || "https://plus.keria.cc.cd";
 
+function vietnamTime() {
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23",
+  }).formatToParts(new Date());
+  const value = (type) => parts.find((part) => part.type === type)?.value;
+
+  return `${value("day")}/${value("month")}/${value("year")} ${value("hour")}:${value("minute")}:${value("second")} UTC+7`;
+}
+
+function extractClaimCodes(req) {
+  try {
+    const codes = JSON.parse(req.headers["x-claim-codes"] || "[]");
+    return Array.isArray(codes) ? codes : [];
+  } catch {
+    return [];
+  }
+}
+
+function logClaimedCodes(req, payload) {
+  const submittedCodes = extractClaimCodes(req);
+
+  (payload.items || []).forEach((item, index) => {
+    if (!item.ok) { return; }
+
+    console.log(JSON.stringify({
+      event: "mail_key_claimed",
+      code: item.code || submittedCodes[index] || "unknown",
+      claimed_at: vietnamTime(),
+      email: item.email || item.masked_email || null,
+    }));
+  });
+}
+
 // Các đường dẫn này được chuyển tiếp thẳng sang server keria (giữ NGUYÊN path).
 const PROXY_PREFIXES = ["/api/", "/pickup", "/after-sale", "/static/"];
 const pathFilter = (pathname) =>
@@ -28,6 +68,24 @@ app.use(
         // Một số server chặn request lạ -> giả lập User-Agent trình duyệt.
         proxyReq.setHeader("User-Agent", "Mozilla/5.0");
         proxyReq.setHeader("Referer", UPSTREAM + "/");
+        proxyReq.setHeader("Accept-Encoding", "identity");
+        proxyReq.removeHeader("X-Claim-Codes");
+      },
+      proxyRes: (proxyRes, req) => {
+        if (req.method !== "POST" || req.originalUrl !== "/api/pickup/mail-keys") {
+          return;
+        }
+
+        const chunks = [];
+        proxyRes.on("data", (chunk) => chunks.push(Buffer.from(chunk)));
+        proxyRes.on("end", () => {
+          try {
+            const payload = JSON.parse(Buffer.concat(chunks).toString("utf8"));
+            logClaimedCodes(req, payload);
+          } catch (error) {
+            console.error(`[claim-log] Không thể đọc phản hồi claim: ${error.message}`);
+          }
+        });
       },
     },
   })
