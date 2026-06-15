@@ -260,6 +260,38 @@
     .foot { text-align: center; font-size: 12.5px; color: var(--ink-faint); }
     .foot .material-symbols-rounded { font-size: 14px; vertical-align: -2px; }
 
+    /* ---------- Telegram CTA ---------- */
+    .tg-cta {
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+      padding: 18px 20px; border-radius: var(--radius-card);
+      background: var(--glass-fill);
+      border: 1px solid var(--glass-stroke);
+      backdrop-filter: blur(28px) saturate(170%); -webkit-backdrop-filter: blur(28px) saturate(170%);
+      box-shadow: var(--shadow), inset 0 1px 0 var(--hi);
+    }
+    .tg-cta__mark {
+      width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0;
+      display: grid; place-items: center; color: #fff;
+      background: linear-gradient(145deg, #2aabee, #229ed9);
+      box-shadow: 0 10px 22px -8px rgba(34, 158, 217, 0.6), inset 0 1px 0 rgba(255,255,255,0.5);
+    }
+    .tg-cta__mark .material-symbols-rounded { font-size: 26px; }
+    .tg-cta__text { flex: 1; min-width: 180px; }
+    .tg-cta__text strong { display: block; font-size: 15px; font-weight: 650; letter-spacing: -0.01em; }
+    .tg-cta__text span { display: block; font-size: 13px; color: var(--ink-faint); margin-top: 2px; }
+    .tg-cta__btn {
+      appearance: none; border: none; cursor: pointer; text-decoration: none;
+      font-family: var(--font); font-size: 14.5px; font-weight: 600; color: #fff; letter-spacing: -0.01em;
+      padding: 12px 18px; border-radius: var(--radius-ctrl);
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(145deg, #2aabee, #229ed9);
+      box-shadow: 0 12px 26px -12px rgba(34, 158, 217, 0.6), inset 0 1px 0 rgba(255,255,255,0.4);
+      transition: transform 0.2s var(--ease), filter 0.2s;
+    }
+    .tg-cta__btn:hover { transform: translateY(-1px); filter: brightness(1.05); }
+    .tg-cta__btn:active { transform: scale(0.98); }
+    .tg-cta__btn .material-symbols-rounded { font-size: 20px; }
+
     .material-symbols-rounded { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; user-select: none; }
 
     /* entrance — kept minimal & always-visible (no opacity gating) */
@@ -359,6 +391,15 @@
         <div data-email-code-status class="status pickup-mail-panel__status" aria-live="polite"></div>
       </div>
     </section>
+
+    <a class="tg-cta" href="https://t.me/AI_Shop1998_bot" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;">
+      <div class="tg-cta__mark"><span class="material-symbols-rounded">send</span></div>
+      <div class="tg-cta__text">
+        <strong>Mua thẻ key &amp; hỗ trợ qua Telegram</strong>
+        <span>Nhắn bot @AI_Shop1998_bot để được tư vấn nhanh nhất</span>
+      </div>
+      <span class="tg-cta__btn"><span class="material-symbols-rounded">send</span> Mở Telegram Bot</span>
+    </a>
 
     <p class="foot"><span class="material-symbols-rounded">lock</span> Kết nối an toàn · Mã xác minh được tự động sao chép sau khi lấy</p>
   </main>
